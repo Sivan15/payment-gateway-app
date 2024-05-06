@@ -11,7 +11,7 @@ class StripeController extends Controller
 {
     public function showPayButton()
     {
-        return view('pay');
+        return view('dashboard');
     }
 
     public function checkout() {
@@ -26,7 +26,7 @@ class StripeController extends Controller
     {
         Stripe::setApiKey(config('stripe.secret')); // Ensure you're pulling from .env correctly
         
-        $user = Auth::user(); // Assuming user authentication is correctly handled
+        // $user = Auth::user(); // Assuming user authentication is correctly handled
         
         $session = StripeSession::create([
             'payment_method_types' => ['card'],
@@ -41,7 +41,7 @@ class StripeController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('payment.success'), // Use the correct route name
+            'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('payment.cancel'), // Use the correct route name
         ]);
         
@@ -50,22 +50,45 @@ class StripeController extends Controller
 
     // Add this to your StripeController
 
-public function success(Request $request)
-{
-    Stripe::setApiKey(config('stripe.secret'));
-
-    // Assuming you are sending the session ID as a query parameter from the Stripe success_url
-    $sessionId = $request->session_id;
-
-    $session = StripeSession::retrieve($sessionId);
-
-    // Retrieve payment intent details
-    $paymentIntent = \Stripe\PaymentIntent::retrieve($session->payment_intent);
-
-    // You can now pass these details to your view
-    return view('success', ['paymentDetails' => $paymentIntent]);
-}
-
+    public function success(Request $request)
+    {
+        Stripe::setApiKey(config('stripe.secret'));
+        $sessionId = $request->query('session_id');
+    
+        if (!$sessionId) {
+            return redirect()->route('error.page'); // Handle this case appropriately
+        }
+    
+        try {
+            $session = StripeSession::retrieve($sessionId);
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($session->payment_intent);
+    
+            // Fetch billing details from the payment method
+            $paymentMethod = \Stripe\PaymentMethod::retrieve($paymentIntent->payment_method);
+    
+            $paymentDetails = [
+                'amount' => number_format($paymentIntent->amount_received / 100, 2), // Convert to major currency unit
+                'currency' => strtoupper($paymentIntent->currency),
+                'status' => $paymentIntent->status,
+                'type' => $paymentMethod->card->brand ?? 'N/A',
+                'date' => date('Y-m-d H:i:s', $paymentIntent->created),
+                'name' => $paymentMethod->billing_details->name ?? 'N/A',
+                'email' => $paymentMethod->billing_details->email ?? 'N/A',
+                'address_line1' => $paymentMethod->billing_details->address->line1 ?? 'N/A',
+                'address_city' => $paymentMethod->billing_details->address->city ?? 'N/A',
+                'address_country' => $paymentMethod->billing_details->address->country ?? 'N/A',
+                'origin' => $paymentMethod->card->country ?? 'N/A',
+            'cvc_check' => $paymentMethod->card->checks->cvc_check ?? 'N/A',
+            'street_check' => $paymentMethod->card->checks->address_line1_check ?? 'N/A',
+            'zip_check' => $paymentMethod->card->checks->address_postal_code_check ?? 'N/A'
+            ];
+    
+            return view('success', ['paymentDetails' => $paymentDetails]);
+        } catch (\Exception $e) {
+            return redirect()->route('error.page'); // Handle errors appropriately
+        }
+    }
+    
 
     public function cancel() {
         return view('cancel');

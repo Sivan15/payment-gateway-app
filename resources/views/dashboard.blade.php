@@ -31,7 +31,7 @@
       <p class="mt-6 text-lg leading-8 text-gray-300">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua.</p>
     </div>
     <div class="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
-    <h2 class="text-sm font-bold tracking-tight text-white sm:text-xl">Welcome, {{ Auth::user()->name }}</h1>
+    <h2 class="text-sm font-bold tracking-tight text-white sm:text-xl">Welcome</h1>
        <br>
         <p class="text-sm font-bold tracking-tight text-white sm:text-xl">Click the button below to make a payment of Rs. 100.</p>
         <br>

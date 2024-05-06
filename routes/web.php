@@ -19,9 +19,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [StripeController::class, 'showPayButton'])->name('dashboard');
-Route::get('/checkout', [StripeController::class, 'checkout'])->name('checkout');
-Route::post('/session', [StripeController::class, 'session'])->name('session');
+Route::get('/dashboard', [StripeController::class, 'showPayButton']);
+Route::get('/checkout', [StripeController::class, 'checkout']);
+Route::post('/pay-method', [StripeController::class, 'payMethod']);
+Route::post('/payment/session', [StripeController::class, 'session'])->name('session');
 Route::get('/payment/success', [StripeController::class, 'success'])->name('payment.success');
 Route::get('/payment/cancel', [StripeController::class, 'cancel'])->name('payment.cancel');
 
