@@ -32,7 +32,7 @@ class StripeController extends Controller
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
-                    'currency' => 'inr',
+                    'currency' => 'USD',
                     'product_data' => [
                         'name' => 'Generic Product',
                     ],

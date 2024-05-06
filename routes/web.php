@@ -19,8 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::get('/pay', [StripeController::class, 'showPayButton'])->name('pay');
+Route::get('/dashboard', [StripeController::class, 'showPayButton'])->name('dashboard');
 Route::get('/checkout', [StripeController::class, 'checkout'])->name('checkout');
 Route::post('/session', [StripeController::class, 'session'])->name('session');
 Route::get('/payment/success', [StripeController::class, 'success'])->name('payment.success');

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Payment Success</title>
 </head>
 <body>
-    <h1>Payment Success</h1>
+    <h1>Payment Successful</h1>
     <div>
-        <h2>Transaction Details:</h2>
-        <p>Amount: ${{ number_format($paymentDetails->amount / 100, 2) }}</p>
-        <p>Status: {{ $paymentDetails->status }}</p>
-        <!-- Add more details as needed -->
+        <p>Amount: {{ $paymentDetails['amount'] }} {{ $paymentDetails['currency'] }}</p>
+        <p>Status: {{ $paymentDetails['status'] }}</p>
+        <p>Date: {{ $paymentDetails['date'] }}</p>
     </div>
 </body>
 </html>
